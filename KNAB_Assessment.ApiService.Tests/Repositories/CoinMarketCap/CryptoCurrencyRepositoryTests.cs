@@ -9,14 +9,14 @@ using System.Text.Json;
 
 namespace KNAB_Assessment.Tests.Repositories.CoinMarketCap;
 
-public class CryptoCurrencyTests
+public class CryptoCurrencyRepositoryTests
 {
     private readonly Mock<IHttpClientFactory> _httpClientFactoryMock;
     private readonly Mock<HttpMessageHandler> _httpMessageHandlerMock;
     private readonly Mock<ILogger<CryptoCurrencyRepository>> _loggerMock;
     private readonly CryptoCurrencyRepository _cryptoCurrencyRepository;
 
-    public CryptoCurrencyTests()
+    public CryptoCurrencyRepositoryTests()
     {
         _httpClientFactoryMock = new Mock<IHttpClientFactory>();
         _httpMessageHandlerMock = new Mock<HttpMessageHandler>();
