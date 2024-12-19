@@ -16,3 +16,10 @@ dotnet run
 then navigate to the URl that is logged
 
 https://localhost:17034/
+
+
+You will be presented with dotnet aspire dashboard with 2 services, API and WebApp
+
+You can visit the WebApp URL to see the simple UI that I created for the test
+
+Alternatively, you can use API url `https://localhost:7380/api/exchange/{symbol}/{comma-separated-currencies}` to test the API
