@@ -1,0 +1,100 @@
+﻿@page "/"
+@using KNAB_Assessment.ServiceDefaults.CommonModels
+@using System.ComponentModel.DataAnnotations
+
+@inject ExchangeRateApiClient ExchangeRateApi
+
+<PageTitle>Home</PageTitle>
+
+<h1 class="mb-5">Hello, KNAB Hiring Team!</h1>
+
+<p class="mb-5">
+Please use the below form to test the application.
+</p>
+
+<EditForm Model="Model" OnValidSubmit="OnValidSubmit" OnInvalidSubmit="OnInvalidSubmit" FormName="ExchangeRate">
+    
+    <label>Symbol (i.e. BTC):</label>
+    <InputText @bind-Value="Model.Symbol" DisplayName="Symbol" />
+
+    <br/>
+    <label>Comma Separated List of Currencies (i.e. USD,EUR,BRL,GBP,AUD):</label>
+    <InputText @bind-Value="Model.Currencies" DisplayName="Currencies" />
+
+    <br />
+
+    <button type="submit">Submit</button>
+
+</EditForm>
+
+@if (IsLoading)
+{
+    <p>Loading... </p>
+}
+else if (!string.IsNullOrEmpty(ErrorMessage))
+{
+    <p style="color: red;" class="mt-5">@ErrorMessage</p>
+}
+else if(ExchangeRate is not null)
+{
+    <h2 class="mt-5">@ExchangeRate.Symbol</h2>    
+    <h4 class="mt-2">@ExchangeRate.Name</h4>
+    <ul>
+        @foreach(var item in ExchangeRate.ExchangeRates)
+        {
+            <li>
+                <b>@item.Key:</b> 
+                @item.Value
+            </li>
+        }
+    </ul>
+}
+
+@code {
+    private GetExchangeRateResponse? ExchangeRate;
+
+    [SupplyParameterFromForm]
+    private FormModel? Model { get; set; }
+
+    private bool IsLoading = false;
+
+    private string ErrorMessage = string.Empty;
+
+    protected override void OnInitialized() => Model ??= new();
+
+
+    public async Task OnValidSubmit()
+    {
+        IsLoading = true;
+        ErrorMessage = string.Empty;
+
+        try
+        {
+            ExchangeRate = await ExchangeRateApi.GetExchangeRate(Model!.Symbol, Model!.Currencies);
+        }
+        catch(Exception ex)
+        {
+            ErrorMessage = ex.Message;
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+
+    public void OnInvalidSubmit()
+    {
+        ErrorMessage = "Please enter a valid symbol and currencies.";
+    }
+
+
+    public class FormModel
+    {
+        [Required(AllowEmptyStrings = false)]
+        public string Symbol { get; set; } = string.Empty;
+
+        [Required(AllowEmptyStrings = false)]
+        public string Currencies { get; set; } = string.Empty;
+    }
+}
